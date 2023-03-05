@@ -12,5 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Install SvelteKit Skeleton (Vite)
 - Github Action to run quality check
 - Event page demo
+- Add Map visualisation with daylight
+- (dev) Add page to test map (`/map`)
 
 [unreleased]: https://github.com/jycouet/Fuzo/compare/main...HEAD
