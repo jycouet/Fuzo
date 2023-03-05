@@ -11,5 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Install SvelteKit Skeleton (Vite)
 - Github Action to run quality check
+- Add `User` class
+- (dev) Add `date-fns` for Date and Time manipulation
 
 [unreleased]: https://github.com/jycouet/Fuzo/compare/main...HEAD
