@@ -1,52 +1,27 @@
 <script lang="ts">
-	import {
-		geoMercator,
-		geoPath,
-		geoCircle,
-		geoOrthographic,
-		geoGnomonic,
-		geoAzimuthalEqualArea,
-		geoAzimuthalEquidistant,
-		geoConicConformal,
-		geoConicEqualArea,
-		geoConicEquidistant,
-		geoEqualEarth,
-		geoEquirectangular,
-		geoNaturalEarth1,
-		geoStereographic,
-		geoTransverseMercator
-	} from 'd3-geo';
+	import { geoPath, geoCircle } from 'd3-geo';
 	import earth from './earth.geo.json';
+	import timezone from './timezones.geo.json';
 	import { subSolar } from './sub-solar';
 	import { utcDate } from './time';
+	import { feature } from 'topojson-client';
+	import { PROJECTION_MAP } from './map';
 
 	export let date = utcDate();
 	export let height = 512;
 	export let width = 512;
 	export let angle = 0;
 	export let projectionType: keyof typeof PROJECTION_MAP = 'mercator';
-
-	const PROJECTION_MAP = {
-		transverseMercator: geoTransverseMercator,
-		stereographic: geoStereographic,
-		naturalEarth1: geoNaturalEarth1,
-		equirectangular: geoEquirectangular,
-		equalEarth: geoEqualEarth,
-		conicEquidistant: geoConicEquidistant,
-		conicEqualArea: geoConicEqualArea,
-		conicConformal: geoConicConformal,
-		azimuthalEquidistant: geoAzimuthalEquidistant,
-		azimuthalEqualArea: geoAzimuthalEqualArea,
-		gnomonic: geoGnomonic,
-		orthographic: geoOrthographic,
-		mercator: geoMercator
-	};
+	export let timezones: Array<string> = [];
+	export let enabletz = false;
 
 	let projection = PROJECTION_MAP[projectionType]()
 		.center([0, 0])
 		.translate([width / 2, height / 2])
 		.scale(width / (2 * Math.PI))
 		.rotate([angle, 0, 0]);
+
+	let tzLayers = enabletz ? feature(timezone, timezone.objects.timezones).features : undefined;
 
 	function circularObject(center: Array<number>, radius: number) {
 		let circle = geoCircle();
@@ -68,6 +43,8 @@
 		sunHalo = sunHalo;
 		sunshine = sunshine;
 	}
+
+	$: tzLayers = enabletz ? feature(timezone, timezone.objects.timezones).features : undefined;
 
 	$: {
 		projection = PROJECTION_MAP[projectionType]()
@@ -103,6 +80,19 @@
 	<!-- Ground -->
 	<path d={geoPath(projection)(earth)} fill="#888888" />
 
+	<!-- timezone -->
+	{#if enabletz}
+		{#each tzLayers as tz}
+			<path
+				d={geoPath(projection)(tz)}
+				fill-opacity="0%"
+				fill="red"
+				class:visible={timezones.includes(tz.properties.tz_name1st) ||
+					timezones.includes(tz.properties.name)}
+			/>
+		{/each}
+	{/if}
+
 	<!-- Sun -->
 	<path d={geoPath(projection)(sun())} fill="#ffff00" />
 	<path d={geoPath(projection)(sunHalo())} fill="#ffff00" filter="blur(6px)" />
@@ -110,7 +100,9 @@
 	<!-- Sun Light -->
 	<path d={geoPath(projection)(sunshine())} fill="#ffff00" filter="blur(4px)" fill-opacity="20%" />
 </svg>
-<select bind:value={projectionType}
-	>{#each Object.keys(PROJECTION_MAP) as value}<option>{value}</option>{/each}</select
->
-<input type="range" min="0" max="360" step="1" bind:value={angle} />
+
+<style>
+	.visible {
+		fill-opacity: 50%;
+	}
+</style>
