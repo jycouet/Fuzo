@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add Timezone
 - (dev) Add page to test map (`/map`)
 - Add `User` class
+- Add meeting page
 - (dev) Add `date-fns` for Date and Time manipulation
+- (dev) Use Cirrus CSS framework
 
 [unreleased]: https://github.com/jycouet/Fuzo/compare/main...HEAD

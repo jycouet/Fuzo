@@ -2,8 +2,9 @@
 	import DayLightMap from '$lib/DayLightMap.svelte';
 	import { utcDate } from '$lib/time';
 	import { PROJECTION_MAP } from '$lib/map.js';
-	import { delta } from '$lib/timezone.json';
+	import all from '$lib/timezone.json';
 
+	const delta = Array.from(new Set(Object.values(all)));
 	let width = 1024;
 	let height = 800;
 	let projectionType = 'mercator';
