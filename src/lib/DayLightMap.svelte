@@ -6,6 +6,7 @@
 	import { utcDate } from './time';
 	import { feature } from 'topojson-client';
 	import { PROJECTION_MAP } from './map';
+	import { tweened } from 'svelte/motion';
 
 	export let date = utcDate();
 	export let height = 512;
@@ -14,6 +15,9 @@
 	export let projectionType: keyof typeof PROJECTION_MAP = 'mercator';
 	export let timezones: Array<string> = [];
 	export let enabletz = false;
+
+	const sunLon = tweened(0);
+	const sunLat = tweened(0);
 
 	let projection = PROJECTION_MAP[projectionType]()
 		.center([0, 0])
@@ -37,7 +41,10 @@
 	const sunBodies = [sun, sunHalo, sunshine];
 
 	$: {
-		sunBodies.forEach((body) => body.center(subSolar(date).coord));
+		const coord = subSolar(date).coord;
+		sunLon.set(coord[0]);
+		sunLat.set(coord[1]);
+		sunBodies.forEach((body) => body.center([$sunLon, $sunLat]));
 		// Reactivity
 		sun = sun;
 		sunHalo = sunHalo;
@@ -78,7 +85,18 @@
 	/>
 
 	<!-- Ground -->
-	<path d={geoPath(projection)(earth)} fill="#888888" />
+	<path
+		d={geoPath(projection)(earth)}
+		fill="#ffffff"
+		filter="blur(4px)"
+		fill-opacity="25%"
+		transform="translateY(0px)"
+	/>
+	<path
+		d={geoPath(projection)(earth)}
+		fill="#888888"
+		filter="drop-shadow(0 1px 2px rgba(0,0,0,0.5))"
+	/>
 
 	<!-- timezone -->
 	{#if enabletz}

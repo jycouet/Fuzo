@@ -10,10 +10,13 @@ export type LocalSlot = UTCSlot & {
 	localEnd: Date;
 };
 export class User {
-	private readonly _name: string;
+	private _name: string;
 	private _slots: Array<LocalSlot> = [];
-	private readonly _tz: string;
+	private _tz: string;
 
+	set name(value: string) {
+		this._name = value;
+	}
 	get name(): string {
 		return this._name;
 	}
@@ -21,7 +24,9 @@ export class User {
 	get slots(): Array<LocalSlot> {
 		return this._slots;
 	}
-
+	set timezone(value: string) {
+		this._tz = value;
+	}
 	get timezone(): string {
 		return this._tz;
 	}
@@ -55,6 +60,9 @@ export class User {
 			localEnd: utcToZonedTime(utcEnd, this._tz)
 		});
 	}
+	removeAllSlots() {
+		this._slots = [];
+	}
 
 	toLocal(slot: UTCSlot): LocalSlot {
 		return {
@@ -69,7 +77,7 @@ export class User {
 	}
 }
 
-export function matchingSlots(...users: Array<{ slots: Array<UTCSlot> }>): Array<UTCSlot> {
+export function matchingSlots(...users: Array<User | { slots: Array<UTCSlot> }>): Array<UTCSlot> {
 	if (users.length < 2) {
 		return [];
 	}
