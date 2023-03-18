@@ -1,3 +1,4 @@
-import { writable } from 'svelte/store';
-
-export const sessions = writable({});
+export const sessions: Record<
+	string,
+	Array<{ clientId: string; timezone: number; controller: ReadableStreamDefaultController }>
+> = {};
