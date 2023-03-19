@@ -12,8 +12,11 @@
 	import { User, matchingSlots } from '$lib/User';
 	import type { UTCSlot } from '$lib/User';
 	import { intlFormat } from 'date-fns';
-	import timezones from '$lib/timezone.json';
+	import _timezones from '$lib/timezone.json';
 	import { utcToZonedTime } from 'date-fns-tz';
+
+	// Typings
+	const timezones = _timezones as Record<string, string>;
 
 	let height = 1024,
 		width = 800,

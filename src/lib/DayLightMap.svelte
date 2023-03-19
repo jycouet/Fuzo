@@ -1,12 +1,19 @@
 <script lang="ts">
 	import { geoPath, geoCircle } from 'd3-geo';
-	import earth from './earth.geo.json';
-	import timezone from './timezones.geo.json';
+	import _earth from './earth.geo.json';
+	import _timezone from './timezones.geo.json';
 	import { subSolar } from './sub-solar';
 	import { utcDate } from './time';
 	import { feature } from 'topojson-client';
 	import { PROJECTION_MAP } from './map';
 	import { tweened } from 'svelte/motion';
+	import type { GeoPermissibleObjects } from 'd3-geo';
+	import type { Topology } from 'topojson-specification';
+	import type { FeatureCollection } from 'geojson';
+
+	// Typings
+	const earth = _earth as GeoPermissibleObjects;
+	const timezone = _timezone as unknown as Topology;
 
 	export let date = utcDate();
 	export let height = 512;
@@ -25,9 +32,11 @@
 		.scale(width / (2 * Math.PI))
 		.rotate([angle, 0, 0]);
 
-	let tzLayers = enabletz ? feature(timezone, timezone.objects.timezones).features : undefined;
+	let tzLayers = enabletz
+		? (feature(timezone, timezone.objects.timezones) as unknown as FeatureCollection).features
+		: undefined;
 
-	function circularObject(center: Array<number>, radius: number) {
+	function circularObject(center: [number, number], radius: number) {
 		let circle = geoCircle();
 		circle.center(center);
 		circle.radius(radius);
@@ -51,7 +60,9 @@
 		sunshine = sunshine;
 	}
 
-	$: tzLayers = enabletz ? feature(timezone, timezone.objects.timezones).features : undefined;
+	$: tzLayers = enabletz
+		? (feature(timezone, timezone.objects.timezones) as unknown as FeatureCollection).features
+		: undefined;
 
 	$: {
 		projection = PROJECTION_MAP[projectionType]()
@@ -93,14 +104,14 @@
 	/>
 
 	<!-- timezone -->
-	{#if enabletz}
+	{#if enabletz && tzLayers !== undefined}
 		{#each tzLayers as tz}
 			<path
 				d={geoPath(projection)(tz)}
 				fill-opacity="0%"
 				fill="red"
-				class:visible={timezones.includes(tz.properties.tz_name1st) ||
-					timezones.includes(tz.properties.name)}
+				class:visible={timezones.includes(tz.properties?.tz_name1st) ||
+					timezones.includes(tz.properties?.name)}
 			/>
 		{/each}
 	{/if}
