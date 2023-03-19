@@ -7,6 +7,7 @@
 	import ShowMatch from './ShowMatch.svelte';
 	import { utcDate } from '$lib/time';
 	import { writable } from 'svelte/store';
+	import type { Writable } from 'svelte/store';
 	import { me } from '$lib/users';
 	import { User, matchingSlots } from '$lib/User';
 	import type { UTCSlot } from '$lib/User';
@@ -21,7 +22,7 @@
 		matches: Array<UTCSlot> = [];
 	let currentDate = writable(utcDate());
 	let manualDate = writable(false);
-	let others: Array<User> = [];
+	let others: Writable<Array<User>> = writable([]);
 
 	setContext('currentDate', currentDate);
 	setContext('manualDate', manualDate);
@@ -35,7 +36,7 @@
 		return () => clearInterval(interval);
 	});
 
-	$: matches = matchingSlots($me as User, ...others);
+	$: matches = matchingSlots($me as User, ...$others);
 
 	function test() {
 		const john = new User('John', 'Europe/Berlin');
@@ -46,7 +47,7 @@
 		doe.addTodaySlot(9, 11);
 		doe.addTodaySlot(16, 18);
 
-		others = [john, doe];
+		$others = [john, doe];
 	}
 </script>
 
@@ -66,12 +67,12 @@
 			</header>
 			<a class="btn" href="#edit-user">Edit your Profile</a>
 			<div class="list-dropdown">
-				<button class="btn-dark btn-dropdown m-0" disabled={others.length === 0}>
-					Users &nbsp;<span class="tag tag--white">{others.length}</span>
+				<button class="btn-dark btn-dropdown m-0" disabled={$others.length === 0}>
+					Users &nbsp;<span class="tag tag--white">{$others.length}</span>
 					<span class="caret" />
 				</button>
 				<ul class="menu">
-					{#each others as user}
+					{#each $others as user}
 						<li class="menu-item">
 							<a
 								href="#user/{user.name}"
@@ -95,10 +96,10 @@
 	</article>
 
 	<EditUser />
-	{#each others as user}
+	{#each $others as user}
 		<ShowUser {user} id={user.name} on:close={() => (selectedTz = [])} />
 	{/each}
-	<ShowMatch slots={matches} {others} />
+	<ShowMatch slots={matches} others={$others} />
 </main>
 
 <div class="p-4 u-top-0 u-justify-center u-right-0 u-left-0 u-absolute u-flex">

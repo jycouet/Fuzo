@@ -35,7 +35,7 @@
 	}
 
 	let sun = circularObject(subSolar(date).coord, 2);
-	let sunHalo = circularObject(subSolar(date).coord, 4);
+	let sunHalo = circularObject(subSolar(date).coord, 3);
 	let sunshine = circularObject(subSolar(date).coord, 90);
 
 	const sunBodies = [sun, sunHalo, sunshine];
@@ -85,13 +85,7 @@
 	/>
 
 	<!-- Ground -->
-	<path
-		d={geoPath(projection)(earth)}
-		fill="#ffffff"
-		filter="blur(4px)"
-		fill-opacity="25%"
-		transform="translateY(0px)"
-	/>
+	<path d={geoPath(projection)(earth)} fill="#ffffff" filter="blur(4px)" fill-opacity="25%" />
 	<path
 		d={geoPath(projection)(earth)}
 		fill="#888888"
@@ -112,8 +106,8 @@
 	{/if}
 
 	<!-- Sun -->
-	<path d={geoPath(projection)(sun())} fill="#ffff00" />
 	<path d={geoPath(projection)(sunHalo())} fill="#ffff00" filter="blur(6px)" />
+	<path d={geoPath(projection)(sun())} fill="#ffff00" filter="drop-shadow(0 0 2px #c0c080)" />
 
 	<!-- Sun Light -->
 	<path d={geoPath(projection)(sunshine())} fill="#ffff00" filter="blur(4px)" fill-opacity="20%" />

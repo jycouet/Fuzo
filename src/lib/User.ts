@@ -9,6 +9,16 @@ export type LocalSlot = UTCSlot & {
 	localStart: Date;
 	localEnd: Date;
 };
+export type SerializedUser = {
+	_u: {
+		n: string;
+		t: string;
+		sl: Array<{
+			s: Date;
+			e: Date;
+		}>;
+	};
+};
 export class User {
 	private _name: string;
 	private _slots: Array<LocalSlot> = [];
@@ -74,6 +84,38 @@ export class User {
 
 	toString(): string {
 		return this.name;
+	}
+	toJSON(): SerializedUser {
+		return {
+			_u: {
+				n: this._name,
+				t: this._tz,
+				sl: this._slots.map((slot) => ({ s: slot.utcStart, e: slot.utcEnd }))
+			}
+		};
+	}
+
+	static reviver(key: string, value: unknown) {
+		if (
+			['s', 'e'].includes(key) &&
+			typeof value === 'string' &&
+			/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/.test(value as string)
+		) {
+			return new Date(value as string);
+		}
+		if (key === '_u' && ['n', 't', 'sl'].every((k) => Object.keys(value as object).includes(k))) {
+			const user = new User((value as SerializedUser['_u']).n, (value as SerializedUser['_u']).t);
+			(value as SerializedUser['_u']).sl.forEach((slot) => user.addDateSlot(slot.s, slot.e, false));
+			return user;
+		}
+		if (
+			typeof value === 'object' &&
+			Object.keys(value as object).includes('_u') &&
+			((value as { _u: unknown })['_u'] as User) instanceof User
+		) {
+			return (value as { _u: User })['_u'];
+		}
+		return value;
 	}
 }
 

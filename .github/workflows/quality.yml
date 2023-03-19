@@ -50,4 +50,4 @@ jobs:
       - name: Run test (Playwright)
         run: pnpm run test
       - name: Run test (Vitest)
-        run: pnpm run test:unit
+        run: pnpm run test:unit --run
