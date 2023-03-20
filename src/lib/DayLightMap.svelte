@@ -3,7 +3,6 @@
 	import _earth from './earth.geo.json';
 	import _timezone from './timezones.geo.json';
 	import { subSolar } from './sub-solar';
-	import { utcDate } from './time';
 	import { feature } from 'topojson-client';
 	import { PROJECTION_MAP } from './map';
 	import { tweened } from 'svelte/motion';
@@ -15,7 +14,7 @@
 	const earth = _earth as GeoPermissibleObjects;
 	const timezone = _timezone as unknown as Topology;
 
-	export let date = utcDate();
+	export let date = new Date();
 	export let height = 512;
 	export let width = 512;
 	export let angle = 0;

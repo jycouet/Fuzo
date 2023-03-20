@@ -1,27 +1,23 @@
 import { zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz';
-import { parse, areIntervalsOverlapping, isBefore, isAfter } from 'date-fns';
+import { areIntervalsOverlapping, isBefore, isAfter, set, format as formater } from 'date-fns';
 
 export type UTCSlot = {
-	utcStart: Date;
-	utcEnd: Date;
-};
-export type LocalSlot = UTCSlot & {
-	localStart: Date;
-	localEnd: Date;
+	start: number;
+	end: number;
 };
 export type SerializedUser = {
 	_u: {
 		n: string;
 		t: string;
 		sl: Array<{
-			s: Date;
-			e: Date;
+			s: number;
+			e: number;
 		}>;
 	};
 };
 export class User {
 	private _name: string;
-	private _slots: Array<LocalSlot> = [];
+	private _slots: Array<UTCSlot> = [];
 	private _tz: string;
 
 	set name(value: string) {
@@ -31,7 +27,7 @@ export class User {
 		return this._name;
 	}
 
-	get slots(): Array<LocalSlot> {
+	get slots(): Array<UTCSlot> {
 		return this._slots;
 	}
 	set timezone(value: string) {
@@ -48,37 +44,38 @@ export class User {
 
 	addTodaySlot(start: number, end: number, isLocal = true) {
 		const utcStart = isLocal
-			? zonedTimeToUtc(parse(start.toString(), 'H', new Date()), this._tz)
-			: parse(start.toString(), 'H', new Date());
+			? zonedTimeToUtc(
+					set(new Date(), { hours: start, minutes: 0, seconds: 0, milliseconds: 0 }),
+					this._tz
+			  )
+			: set(new Date(), { hours: start, minutes: 0, seconds: 0, milliseconds: 0 });
 		const utcEnd = isLocal
-			? zonedTimeToUtc(parse(end.toString(), 'H', new Date()), this._tz)
-			: parse(end.toString(), 'H', new Date());
+			? zonedTimeToUtc(
+					set(new Date(), { hours: end, minutes: 0, seconds: 0, milliseconds: 0 }),
+					this._tz
+			  )
+			: set(new Date(), { hours: end, minutes: 0, seconds: 0, milliseconds: 0 });
 		this._slots.push({
-			utcStart,
-			utcEnd,
-			localStart: utcToZonedTime(utcStart, this._tz),
-			localEnd: utcToZonedTime(utcEnd, this._tz)
+			start: utcStart.getTime(),
+			end: utcEnd.getTime()
 		});
 	}
 	addDateSlot(start: Date, end: Date, isLocal = true) {
 		const utcStart = isLocal ? zonedTimeToUtc(start, this._tz) : start;
 		const utcEnd = isLocal ? zonedTimeToUtc(end, this._tz) : end;
 		this._slots.push({
-			utcStart,
-			utcEnd,
-			localStart: utcToZonedTime(utcStart, this._tz),
-			localEnd: utcToZonedTime(utcEnd, this._tz)
+			start: utcStart.getTime(),
+			end: utcEnd.getTime()
 		});
 	}
 	removeAllSlots() {
 		this._slots = [];
 	}
 
-	toLocal(slot: UTCSlot): LocalSlot {
+	format(slot: UTCSlot, format: string): { start: string; end: string } {
 		return {
-			...slot,
-			localStart: utcToZonedTime(slot.utcStart, this._tz),
-			localEnd: utcToZonedTime(slot.utcEnd, this._tz)
+			start: formater(utcToZonedTime(slot.start, this._tz), format),
+			end: formater(utcToZonedTime(slot.end, this._tz), format)
 		};
 	}
 
@@ -90,22 +87,17 @@ export class User {
 			_u: {
 				n: this._name,
 				t: this._tz,
-				sl: this._slots.map((slot) => ({ s: slot.utcStart, e: slot.utcEnd }))
+				sl: this._slots.map((slot) => ({ s: slot.start, e: slot.end }))
 			}
 		};
 	}
 
 	static reviver(key: string, value: unknown) {
-		if (
-			['s', 'e'].includes(key) &&
-			typeof value === 'string' &&
-			/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/.test(value as string)
-		) {
-			return new Date(value as string);
-		}
 		if (key === '_u' && ['n', 't', 'sl'].every((k) => Object.keys(value as object).includes(k))) {
 			const user = new User((value as SerializedUser['_u']).n, (value as SerializedUser['_u']).t);
-			(value as SerializedUser['_u']).sl.forEach((slot) => user.addDateSlot(slot.s, slot.e, false));
+			(value as SerializedUser['_u']).sl.forEach((slot) =>
+				user.addDateSlot(new Date(slot.s), new Date(slot.e), false)
+			);
 			return user;
 		}
 		if (
@@ -129,18 +121,16 @@ export function matchingSlots(...users: Array<User | { slots: Array<UTCSlot> }>)
 }
 
 function matchingBetween(user1: Array<UTCSlot>, user2: Array<UTCSlot>): Array<UTCSlot> {
-	return user1.reduce((matches, { utcStart, utcEnd }) => {
-		const interval1 = { start: utcStart, end: utcEnd };
+	return user1.reduce((matches, interval1) => {
 		return [
 			...matches,
-			...user2.reduce((carry, slot) => {
-				const interval2 = { start: slot.utcStart, end: slot.utcEnd };
+			...user2.reduce((carry, interval2) => {
 				if (!areIntervalsOverlapping(interval1, interval2)) {
 					return carry;
 				}
 				carry.push({
-					utcStart: isAfter(interval1.start, interval2.start) ? interval1.start : interval2.start,
-					utcEnd: isBefore(interval1.end, interval2.end) ? interval1.end : interval2.end
+					start: isAfter(interval1.start, interval2.start) ? interval1.start : interval2.start,
+					end: isBefore(interval1.end, interval2.end) ? interval1.end : interval2.end
 				} as UTCSlot);
 				return carry;
 			}, [] as Array<UTCSlot>)

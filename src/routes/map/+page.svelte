@@ -1,6 +1,5 @@
 <script lang="ts">
 	import DayLightMap from '$lib/DayLightMap.svelte';
-	import { utcDate } from '$lib/time';
 	import { PROJECTION_MAP } from '$lib/map.js';
 	import all from '$lib/timezone.json';
 
@@ -16,7 +15,7 @@
 <svelte:window bind:innerHeight={height} bind:innerWidth={width} />
 
 <DayLightMap
-	date={utcDate()}
+	date={new Date()}
 	height={height - 80}
 	{width}
 	{projectionType}

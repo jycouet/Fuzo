@@ -1,4 +1,4 @@
-import { differenceInMinutes, format, setHours, setMinutes, setSeconds } from 'date-fns';
+import { format } from 'date-fns';
 
 function sunDeclination(dayOfYear: number) {
 	// https://www.pveducation.org/pvcdrom/properties-of-sunlight/declination-angle
@@ -6,10 +6,12 @@ function sunDeclination(dayOfYear: number) {
 }
 function sunNoon(time: Date) {
 	// https://en.wikipedia.org/wiki/Subsolar_point
-	const midDay = setHours(setMinutes(setSeconds(time, 0), 0), 12);
-	const dayOfYear = parseInt(format(time, 'D', { useAdditionalDayOfYearTokens: true }));
-	const elapsed = differenceInMinutes(midDay, time);
-	return ((elapsed - equationOfTime(dayOfYear)) / (60 * 24)) * 360;
+	const timeMinute =
+		(time.getUTCSeconds() + time.getUTCMinutes() * 60 + time.getUTCHours() * 3600) / 60;
+	const midDayMinute = 12 * 60;
+	const dayOfYear = parseInt(format(time.getTime(), 'D', { useAdditionalDayOfYearTokens: true }));
+	const elapsedMinutes = midDayMinute - timeMinute;
+	return ((elapsedMinutes - equationOfTime(dayOfYear)) / (60 * 24)) * 360;
 }
 function equationOfTime(dayOfYear: number) {
 	// https://www.intmath.com/blog/mathematics/the-equation-of-time-5039

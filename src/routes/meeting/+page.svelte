@@ -5,7 +5,6 @@
 	import EditUser from './EditUser.svelte';
 	import ShowUser from './ShowUser.svelte';
 	import ShowMatch from './ShowMatch.svelte';
-	import { utcDate } from '$lib/time';
 	import { writable } from 'svelte/store';
 	import type { Writable } from 'svelte/store';
 	import { me } from '$lib/users';
@@ -13,7 +12,6 @@
 	import type { UTCSlot } from '$lib/User';
 	import { intlFormat } from 'date-fns';
 	import _timezones from '$lib/timezone.json';
-	import { utcToZonedTime } from 'date-fns-tz';
 
 	// Typings
 	const timezones = _timezones as Record<string, string>;
@@ -23,7 +21,7 @@
 		selectedTz: Array<string> = [],
 		angle: 0,
 		matches: Array<UTCSlot> = [];
-	let currentDate = writable(utcDate());
+	let currentDate = writable(new Date());
 	let manualDate = writable(false);
 	let others: Writable<Array<User>> = writable([]);
 
@@ -33,7 +31,7 @@
 	onMount(() => {
 		const interval = setInterval(() => {
 			if (!$manualDate) {
-				$currentDate = utcDate();
+				$currentDate = new Date();
 			}
 		}, 10_000);
 		return () => clearInterval(interval);
@@ -42,15 +40,11 @@
 	$: matches = matchingSlots($me as User, ...$others);
 
 	function test() {
-		const john = new User('John', 'Europe/Berlin');
-		john.addTodaySlot(9, 10);
-		john.addTodaySlot(11, 12);
-		john.addTodaySlot(14, 17);
-		const doe = new User('Doe', 'Asia/Tokyo');
-		doe.addTodaySlot(9, 11);
-		doe.addTodaySlot(16, 18);
-
-		$others = [john, doe];
+		$others = JSON.parse(
+			'[{"_u":{"n":"John","t":"Europe/Berlin","sl":[{"s":1679299200000,"e":1679302800000},{"s":1679306400000,"e":1679310000000},{"s":1679317200000,"e":1679328000000}]}}' +
+				',{"_u":{"n":"Doe","t":"Asia/Tokyo","sl":[{"s":1679270400000,"e":1679277600000},{"s":1679295600000,"e":1679302800000}]}}]',
+			User.reviver
+		);
 	}
 </script>
 
@@ -107,14 +101,15 @@
 
 <div class="p-4 u-top-0 u-justify-center u-right-0 u-left-0 u-absolute u-flex">
 	<div class="toast toast--translucent u-basis-content currentDate">
-		{intlFormat(utcToZonedTime($currentDate, $me.timezone), {
+		{intlFormat($currentDate.getTime(), {
 			year: 'numeric',
 			month: 'long',
 			day: 'numeric',
 			weekday: 'long',
 			hour: 'numeric',
 			minute: 'numeric',
-			timeZoneName: 'short'
+			timeZoneName: 'short',
+			timeZone: $me.timezone || 'Etc/UTC'
 		})}
 	</div>
 </div>

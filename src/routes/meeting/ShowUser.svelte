@@ -27,14 +27,14 @@
 				{#each user.slots as slot}
 					<Date
 						class="u-text-right"
-						date={utcToZonedTime(slot.utcStart, $me.timezone)}
+						date={utcToZonedTime(slot.start, $me.timezone)}
 						format="k'h'"
 						timezone={$me.timezone}
 					/>
 					<span class="u-text-center">&rarr;</span>
 					<Date
 						class="u-text-left"
-						date={utcToZonedTime(slot.utcEnd, $me.timezone)}
+						date={utcToZonedTime(slot.end, $me.timezone)}
 						format="k'h'"
 						timezone={$me.timezone}
 					/>
@@ -46,12 +46,17 @@
 				{#each user.slots as slot}
 					<Date
 						class="u-text-right"
-						date={slot.localStart}
+						date={utcToZonedTime(slot.start, user.timezone)}
 						format="k'h'"
 						timezone={user.timezone}
 					/>
 					<span class="u-text-center">&rarr;</span>
-					<Date class="u-text-left" date={slot.localEnd} format="k'h'" timezone={user.timezone} />
+					<Date
+						class="u-text-left"
+						date={utcToZonedTime(slot.end, user.timezone)}
+						format="k'h'"
+						timezone={user.timezone}
+					/>
 				{/each}
 			</div>
 		</section>

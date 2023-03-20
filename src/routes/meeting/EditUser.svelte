@@ -3,7 +3,8 @@
 	import all from '$lib/timezone.json';
 	import DualRangeInput from '$lib/DualRangeInput.svelte';
 	import { me } from '$lib/users';
-	import type { LocalSlot } from '../../lib/User';
+	import type { UTCSlot } from '$lib/User';
+	import { utcToZonedTime } from 'date-fns-tz';
 	const dispatch = createEventDispatcher();
 	const timezones = Object.keys(all);
 	let slots: Array<{ start: number; end: number }> = [];
@@ -12,9 +13,9 @@
 		if ($me.timezone === '') {
 			$me.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 		}
-		slots = $me.slots.map((slot: LocalSlot) => ({
-			start: slot.localStart.getHours(),
-			end: slot.localEnd.getHours()
+		slots = $me.slots.map((slot: UTCSlot) => ({
+			start: utcToZonedTime(slot.start, $me.timezone).getHours(),
+			end: utcToZonedTime(slot.end, $me.timezone).getHours()
 		}));
 	});
 	function save() {

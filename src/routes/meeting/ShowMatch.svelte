@@ -3,6 +3,7 @@
 	import Date from '$lib/Date.svelte';
 	import { me } from '$lib/users';
 	import type { UTCSlot, User } from '$lib/User';
+	import { utcToZonedTime } from 'date-fns-tz';
 	const dispatch = createEventDispatcher();
 	export let slots: Array<UTCSlot> = [];
 	export let others: Array<User> = [];
@@ -27,14 +28,14 @@
 				{#each slots as slot}
 					<Date
 						class="u-text-right"
-						date={$me.toLocal(slot).localStart}
+						date={utcToZonedTime(slot.start, $me.timezone)}
 						timezone={$me.timezone}
 						format="k'h'"
 					/>
 					<span class="u-text-center">&rarr;</span>
 					<Date
 						class="u-text-left"
-						date={$me.toLocal(slot).localEnd}
+						date={utcToZonedTime(slot.end, $me.timezone)}
 						timezone={$me.timezone}
 						format="k'h'"
 					/>
@@ -59,14 +60,14 @@
 					{#each slots as slot}
 						<Date
 							class="u-text-right"
-							date={selected.toLocal(slot).localStart}
+							date={utcToZonedTime(slot.start, selected.timezone)}
 							timezone={selected.timezone}
 							format="k'h'"
 						/>
 						<span class="u-text-center">&rarr;</span>
 						<Date
 							class="u-text-left"
-							date={selected.toLocal(slot).localEnd}
+							date={utcToZonedTime(slot.end, selected.timezone)}
 							timezone={selected.timezone}
 							format="k'h'"
 						/>

@@ -1,38 +1,36 @@
 import { describe, it, expect } from 'vitest';
 import { matchingSlots, User } from './User';
-import { parse, setHours, setMilliseconds, setMinutes, setSeconds } from 'date-fns';
-import { utcDate } from './time';
+import { set } from 'date-fns';
+
+function utcDate(day: number, hour: number, minute: number): number {
+	return Date.UTC(2023, 3 - 1, day, hour, minute, 0, 0);
+}
 
 describe('User JSON', () => {
 	it('to JSON', () => {
 		const user = new User('John', 'America/Toronto');
-		user.addDateSlot(
-			new Date(Date.UTC(2023, 2, 18, 20, 28, 0, 0)),
-			new Date(Date.UTC(2023, 2, 18, 21, 28, 0, 0))
-		);
+		user.addDateSlot(new Date(utcDate(18, 20, 28)), new Date(utcDate(18, 21, 28)));
 		expect(JSON.stringify(user)).toBe(
-			'{"_u":{"n":"John","t":"America/Toronto","sl":[{"s":"2023-03-19T01:28:00.000Z","e":"2023-03-19T02:28:00.000Z"}]}}'
+			'{"_u":{"n":"John","t":"America/Toronto","sl":[{"s":1679189280000,"e":1679192880000}]}}'
 		);
 	});
 	it('from JSON', () => {
 		const input =
-			'{"_u":{"n":"John","t":"America/Toronto","sl":[{"s":"2023-03-19T01:28:00.000Z","e":"2023-03-19T02:28:00.000Z"}]}}';
+			'{"_u":{"n":"John","t":"America/Toronto","sl":[{"s":1679189280000,"e":1679182880000}]}}';
 		const output: User = JSON.parse(input, User.reviver);
 		expect(output).toBeInstanceOf(User);
 		expect(output.name).toBe('John');
 		expect(output.timezone).toBe('America/Toronto');
 		expect(output.slots).toEqual([
 			{
-				localStart: new Date(Date.UTC(2023, 2, 18, 20, 28, 0, 0)),
-				localEnd: new Date(Date.UTC(2023, 2, 18, 21, 28, 0, 0)),
-				utcStart: new Date(Date.UTC(2023, 2, 19, 1, 28, 0, 0)),
-				utcEnd: new Date(Date.UTC(2023, 2, 19, 2, 28, 0, 0))
+				start: 1679189280000,
+				end: 1679182880000
 			}
 		]);
 	});
-	it('from listt JSON', () => {
+	it('from list JSON', () => {
 		const input =
-			'[{"_u":{"n":"John","t":"America/Toronto","sl":[{"s":"2023-03-19T01:28:00.000Z","e":"2023-03-19T02:28:00.000Z"}]}},{"_u":{"n":"Doe","t":"Europe/Paris","sl":[{"s":"2023-03-19T01:28:00.000Z","e":"2023-03-19T02:28:00.000Z"}]}}]';
+			'[{"_u":{"n":"John","t":"America/Toronto","sl":[{"s":1679189280000,"e":1679182880000}]}},{"_u":{"n":"Doe","t":"Europe/Paris","sl":[{"s":1679189280000,"e":1679182880000}]}}]';
 		const output: Array<User> = JSON.parse(input, User.reviver);
 		expect(output).toHaveLength(2);
 
@@ -45,10 +43,8 @@ describe('User JSON', () => {
 		expect(output[1].timezone).toBe('Europe/Paris');
 		expect(output[1].slots).toEqual([
 			{
-				localStart: new Date(Date.UTC(2023, 2, 19, 1, 28, 0, 0)),
-				localEnd: new Date(Date.UTC(2023, 2, 19, 2, 28, 0, 0)),
-				utcStart: new Date(Date.UTC(2023, 2, 19, 1, 28, 0, 0)),
-				utcEnd: new Date(Date.UTC(2023, 2, 19, 2, 28, 0, 0))
+				start: 1679189280000,
+				end: 1679182880000
 			}
 		]);
 	});
@@ -57,10 +53,8 @@ describe('User JSON', () => {
 describe('User addTodaySlot', () => {
 	const expectedLocalizedSlots = [
 		{
-			utcStart: setMilliseconds(setSeconds(setMinutes(setHours(utcDate(), 21), 0), 0), 0),
-			utcEnd: setMilliseconds(setSeconds(setMinutes(setHours(utcDate(), 22), 0), 0), 0),
-			localStart: setMilliseconds(setSeconds(setMinutes(setHours(utcDate(), 16), 0), 0), 0),
-			localEnd: setMilliseconds(setSeconds(setMinutes(setHours(utcDate(), 17), 0), 0), 0)
+			start: set(new Date(), { hours: 21, minutes: 0, seconds: 0, milliseconds: 0 }).getTime(),
+			end: set(new Date(), { hours: 22, minutes: 0, seconds: 0, milliseconds: 0 }).getTime()
 		}
 	];
 
@@ -80,14 +74,12 @@ describe('User slot conversion', () => {
 	it('UTC to EST', () => {
 		const user = new User('John', 'America/Toronto');
 		const inputSlot = {
-			utcStart: parse('03/03/2023 22:17:00', 'dd/MM/yyyy HH:mm:ss', utcDate()),
-			utcEnd: parse('03/03/2023 22:29:00', 'dd/MM/yyyy HH:mm:ss', utcDate())
+			start: utcDate(3, 22, 17),
+			end: utcDate(3, 22, 29)
 		};
-		expect(user.toLocal(inputSlot)).toMatchObject({
-			utcStart: parse('03/03/2023 22:17:00', 'dd/MM/yyyy HH:mm:ss', utcDate()),
-			utcEnd: parse('03/03/2023 22:29:00', 'dd/MM/yyyy HH:mm:ss', utcDate()),
-			localStart: parse('03/03/2023 16:17:00', 'dd/MM/yyyy HH:mm:ss', utcDate()),
-			localEnd: parse('03/03/2023 16:29:00', 'dd/MM/yyyy HH:mm:ss', utcDate())
+		expect(user.format(inputSlot, 'dd/MM/yyyy HH:mm:ss')).toMatchObject({
+			start: '03/03/2023 17:17:00',
+			end: '03/03/2023 17:29:00'
 		});
 	});
 });
@@ -97,16 +89,16 @@ describe('Slot matching test', () => {
 		const user1 = {
 			slots: [
 				{
-					utcStart: parse('03/03/2023 22:17:00', 'dd/MM/yyyy HH:mm:ss', utcDate()),
-					utcEnd: parse('03/03/2023 22:29:00', 'dd/MM/yyyy HH:mm:ss', utcDate())
+					start: utcDate(3, 22, 17),
+					end: utcDate(3, 22, 29)
 				}
 			]
 		};
 		const user2 = {
 			slots: [
 				{
-					utcStart: parse('03/03/2023 22:17:00', 'dd/MM/yyyy HH:mm:ss', utcDate()),
-					utcEnd: parse('03/03/2023 22:29:00', 'dd/MM/yyyy HH:mm:ss', utcDate())
+					start: utcDate(3, 22, 17),
+					end: utcDate(3, 22, 29)
 				}
 			]
 		};
@@ -114,8 +106,8 @@ describe('Slot matching test', () => {
 		expect(actual.length).toBe(1);
 		expect(actual).toMatchObject([
 			{
-				utcStart: parse('03/03/2023 22:17:00', 'dd/MM/yyyy HH:mm:ss', utcDate()),
-				utcEnd: parse('03/03/2023 22:29:00', 'dd/MM/yyyy HH:mm:ss', utcDate())
+				start: utcDate(3, 22, 17),
+				end: utcDate(3, 22, 29)
 			}
 		]);
 	});
@@ -123,16 +115,16 @@ describe('Slot matching test', () => {
 		const user1 = {
 			slots: [
 				{
-					utcStart: parse('03/03/2023 12:17:00', 'dd/MM/yyyy HH:mm:ss', utcDate()),
-					utcEnd: parse('03/03/2023 12:29:00', 'dd/MM/yyyy HH:mm:ss', utcDate())
+					start: utcDate(3, 12, 17),
+					end: utcDate(3, 12, 29)
 				}
 			]
 		};
 		const user2 = {
 			slots: [
 				{
-					utcStart: parse('03/03/2023 22:17:00', 'dd/MM/yyyy HH:mm:ss', utcDate()),
-					utcEnd: parse('03/03/2023 22:29:00', 'dd/MM/yyyy HH:mm:ss', utcDate())
+					start: utcDate(3, 22, 17),
+					end: utcDate(3, 22, 29)
 				}
 			]
 		};
@@ -143,16 +135,16 @@ describe('Slot matching test', () => {
 		const user1 = {
 			slots: [
 				{
-					utcStart: parse('03/03/2023 12:17:00', 'dd/MM/yyyy HH:mm:ss', utcDate()),
-					utcEnd: parse('03/03/2023 14:29:00', 'dd/MM/yyyy HH:mm:ss', utcDate())
+					start: utcDate(3, 12, 17),
+					end: utcDate(3, 14, 29)
 				}
 			]
 		};
 		const user2 = {
 			slots: [
 				{
-					utcStart: parse('03/03/2023 13:17:00', 'dd/MM/yyyy HH:mm:ss', utcDate()),
-					utcEnd: parse('03/03/2023 15:29:00', 'dd/MM/yyyy HH:mm:ss', utcDate())
+					start: utcDate(3, 13, 17),
+					end: utcDate(3, 15, 29)
 				}
 			]
 		};
@@ -160,8 +152,8 @@ describe('Slot matching test', () => {
 		expect(actual.length).toBe(1);
 		expect(actual).toMatchObject([
 			{
-				utcStart: parse('03/03/2023 13:17:00', 'dd/MM/yyyy HH:mm:ss', utcDate()),
-				utcEnd: parse('03/03/2023 14:29:00', 'dd/MM/yyyy HH:mm:ss', utcDate())
+				start: utcDate(3, 13, 17),
+				end: utcDate(3, 14, 29)
 			}
 		]);
 	});
@@ -169,20 +161,20 @@ describe('Slot matching test', () => {
 		const user1 = {
 			slots: [
 				{
-					utcStart: parse('03/03/2023 12:17:00', 'dd/MM/yyyy HH:mm:ss', utcDate()),
-					utcEnd: parse('03/03/2023 14:29:00', 'dd/MM/yyyy HH:mm:ss', utcDate())
+					start: utcDate(3, 12, 17),
+					end: utcDate(3, 14, 29)
 				}
 			]
 		};
 		const user2 = {
 			slots: [
 				{
-					utcStart: parse('03/03/2023 13:17:00', 'dd/MM/yyyy HH:mm:ss', utcDate()),
-					utcEnd: parse('03/03/2023 15:29:00', 'dd/MM/yyyy HH:mm:ss', utcDate())
+					start: utcDate(3, 13, 17),
+					end: utcDate(3, 15, 29)
 				},
 				{
-					utcStart: parse('03/03/2023 10:17:00', 'dd/MM/yyyy HH:mm:ss', utcDate()),
-					utcEnd: parse('03/03/2023 12:29:00', 'dd/MM/yyyy HH:mm:ss', utcDate())
+					start: utcDate(3, 10, 17),
+					end: utcDate(3, 12, 29)
 				}
 			]
 		};
@@ -190,12 +182,12 @@ describe('Slot matching test', () => {
 		expect(actual.length).toBe(2);
 		expect(actual).toMatchObject([
 			{
-				utcStart: parse('03/03/2023 13:17:00', 'dd/MM/yyyy HH:mm:ss', utcDate()),
-				utcEnd: parse('03/03/2023 14:29:00', 'dd/MM/yyyy HH:mm:ss', utcDate())
+				start: utcDate(3, 13, 17),
+				end: utcDate(3, 14, 29)
 			},
 			{
-				utcStart: parse('03/03/2023 12:17:00', 'dd/MM/yyyy HH:mm:ss', utcDate()),
-				utcEnd: parse('03/03/2023 12:29:00', 'dd/MM/yyyy HH:mm:ss', utcDate())
+				start: utcDate(3, 12, 17),
+				end: utcDate(3, 12, 29)
 			}
 		]);
 	});
