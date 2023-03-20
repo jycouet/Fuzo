@@ -11,5 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Install SvelteKit Skeleton (Vite)
 - Github Action to run quality check
+- Event page demo
 
 [unreleased]: https://github.com/jycouet/Fuzo/compare/main...HEAD
