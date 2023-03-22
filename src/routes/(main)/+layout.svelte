@@ -5,7 +5,7 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css" />
 </svelte:head>
 
-<h1>Welcome Fuzo</h1>
+<h1><a href="/">Welcome Fuzo</a></h1>
 <div class="flex">
 	<div class="column">
 		<h2>Tools</h2>

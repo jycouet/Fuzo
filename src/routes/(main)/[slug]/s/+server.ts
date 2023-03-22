@@ -28,7 +28,7 @@ function addClient(
 }
 
 function removeClient(slug: string, clientId: string) {
-	console.log('cancel ', slug, clientId);
+	console.log('leave', slug, clientId);
 	if (Object.keys(sessions).includes(slug)) {
 		sessions[slug] = sessions[slug].filter((value) => value.clientId !== clientId);
 	}
@@ -54,7 +54,7 @@ export const GET = (({ params }) => {
 	// fake timezone
 	const timezone = getTimezone();
 
-	console.log(slug, clientId, timezone);
+	console.log('enter', slug, clientId, timezone);
 
 	const stream = new ReadableStream({
 		start(controller: ReadableStreamDefaultController) {

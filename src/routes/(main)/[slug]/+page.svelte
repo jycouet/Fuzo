@@ -1,9 +1,39 @@
-<script>
+<script lang="ts">
+	import { browser } from '$app/environment';
+	import { beforeNavigate } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { eventSourceStore } from '$lib/EventSourceStore';
 
-	let h = eventSourceStore([], `/${$page.params.slug}/s`);
+	let messages: any = [];
+
+	let eventSource: EventSource | null = null;
+
+	// reactivity for $page.params.slug
+	$: {
+		if (browser) {
+			closeEventSource();
+
+			eventSource = new EventSource(`/${$page.params.slug}/s`);
+			eventSource.onmessage = (event) => {
+				messages = JSON.parse(event.data);
+			};
+			eventSource.onerror = function (...e) {
+				console.error(e);
+			};
+		}
+	}
+
+	beforeNavigate((info) => {
+		closeEventSource();
+	});
+
+	function closeEventSource() {
+		if (eventSource !== null) {
+			eventSource.close();
+			eventSource = null;
+		}
+	}
 </script>
 
 <h3>{$page.params.slug}</h3>
-<pre>{JSON.stringify($h, null, 2)}</pre>
+
+<pre>{JSON.stringify(messages, null, 2)}</pre>
