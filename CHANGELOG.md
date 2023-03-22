@@ -12,5 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Install SvelteKit Skeleton (Vite)
 - Github Action to run quality check
 - Event page demo
+- Add Map visualisation with daylight
+- Add Timezone
+- (dev) Add page to test map (`/map`)
+- Add `User` class
+- Add meeting page
+- (dev) Add `date-fns` for Date and Time manipulation
+- (dev) Use Cirrus CSS framework
 
 [unreleased]: https://github.com/jycouet/Fuzo/compare/main...HEAD
