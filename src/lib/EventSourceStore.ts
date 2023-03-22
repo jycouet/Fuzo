@@ -1,6 +1,6 @@
+import { onMount } from 'svelte';
 import type { Readable } from 'svelte/store';
 import { readable } from 'svelte/store';
-import { onMount } from 'svelte';
 
 /**
  * Create a store that will update with a EventSource.

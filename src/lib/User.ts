@@ -1,5 +1,5 @@
-import { zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz';
 import { areIntervalsOverlapping, isBefore, isAfter, set, format as formater } from 'date-fns';
+import { zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz';
 
 export type UTCSlot = {
 	start: number;

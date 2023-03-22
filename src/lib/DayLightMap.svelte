@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { geoPath, geoCircle } from 'd3-geo';
-	import _earth from './earth.geo.json';
-	import _timezone from './timezones.geo.json';
-	import { subSolar } from './sub-solar';
-	import { feature } from 'topojson-client';
-	import { PROJECTION_MAP } from './map';
-	import { tweened } from 'svelte/motion';
 	import type { GeoPermissibleObjects } from 'd3-geo';
-	import type { Topology } from 'topojson-specification';
 	import type { FeatureCollection } from 'geojson';
+	import { tweened } from 'svelte/motion';
+	import { feature } from 'topojson-client';
+	import type { Topology } from 'topojson-specification';
+	import _earth from './earth.geo.json';
+	import { PROJECTION_MAP } from './map';
+	import { subSolar } from './sub-solar';
+	import _timezone from './timezones.geo.json';
 
 	// Typings
 	const earth = _earth as GeoPermissibleObjects;

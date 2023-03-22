@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { format as formatter } from 'date-fns';
-	import { getContext } from 'svelte';
 	import { zonedTimeToUtc } from 'date-fns-tz';
+	import { getContext } from 'svelte';
 	import type { Writable } from 'svelte/store';
 	import { writable } from 'svelte/store';
 

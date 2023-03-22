@@ -1,5 +1,5 @@
-import type { RequestHandler } from './$types';
 import { sessions } from '$lib/store';
+import type { RequestHandler } from './$types';
 
 export type Client = {
 	clientId: string;

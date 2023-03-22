@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	import Date from '$lib/Date.svelte';
 	import type { User } from '$lib/User';
 	import { me } from '$lib/users';
 	import { utcToZonedTime } from 'date-fns-tz';
-	import Date from '$lib/Date.svelte';
+	import { createEventDispatcher } from 'svelte';
+
 	const dispatch = createEventDispatcher();
 	export let user: User;
 	export let id: string;

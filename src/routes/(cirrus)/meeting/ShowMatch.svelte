@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import Date from '$lib/Date.svelte';
-	import { me } from '$lib/users';
 	import type { UTCSlot, User } from '$lib/User';
+	import { me } from '$lib/users';
 	import { utcToZonedTime } from 'date-fns-tz';
+	import { createEventDispatcher } from 'svelte';
+
 	const dispatch = createEventDispatcher();
 	export let slots: Array<UTCSlot> = [];
 	export let others: Array<User> = [];

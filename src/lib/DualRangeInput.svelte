@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+
 	const dispatch = createEventDispatcher();
 	export let min = 0;
 	export let max = 100;
