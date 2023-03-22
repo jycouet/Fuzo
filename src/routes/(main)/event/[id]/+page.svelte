@@ -24,7 +24,7 @@
 	});
 </script>
 
-<h1>{atob($page.url.searchParams.get('title') ?? '')}</h1>
+<h1>{decodeURIComponent(atob($page.url.searchParams.get('title') ?? ''))}</h1>
 <span>{format(timestamp, 'PPPPpppp')}</span> &mdash;
 <var>{formatDistance(timestamp, now, { addSuffix: true })}</var>
 <hr />

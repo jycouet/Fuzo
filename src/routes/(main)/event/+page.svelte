@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { format } from 'date-fns';
 	import Hashids from 'hashids';
 
 	const hashids = new Hashids();
@@ -52,11 +53,11 @@
 		</label>
 	</section>
 </article>
-<var>{new Date(date)}</var>
+<var>{format(date, 'PPPPpppp')}</var>
 <var>{hashids.encode(year, month, day, hours, minutes)}</var>
 
 <hr />
-<a href="/event/{hashids.encode(year, month, day, hours, minutes)}?title={btoa(title)}">
+<a href="/event/{hashids.encode(year, month, day, hours, minutes)}?title={btoa(encodeURIComponent(title))}">
 	See event
 </a>
 
