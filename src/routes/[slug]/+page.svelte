@@ -5,5 +5,5 @@
 	let h = eventSourceStore([], `/${$page.params.slug}/s`);
 </script>
 
-<p>{$page.params.slug}</p>
+<h3>{$page.params.slug}</h3>
 <pre>{JSON.stringify($h, null, 2)}</pre>
