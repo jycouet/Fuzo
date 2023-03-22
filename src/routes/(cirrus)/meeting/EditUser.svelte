@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { createEventDispatcher, onMount } from 'svelte';
-	import all from '$lib/timezone.json';
 	import DualRangeInput from '$lib/DualRangeInput.svelte';
-	import { me } from '$lib/users';
 	import type { UTCSlot } from '$lib/User';
+	import all from '$lib/timezone.json';
+	import { me } from '$lib/users';
 	import { utcToZonedTime } from 'date-fns-tz';
+	import { createEventDispatcher, onMount } from 'svelte';
+
 	const dispatch = createEventDispatcher();
 	const timezones = Object.keys(all);
 	let slots: Array<{ start: number; end: number }> = [];

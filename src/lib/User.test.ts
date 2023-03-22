@@ -1,6 +1,6 @@
+import { set } from 'date-fns';
 import { describe, it, expect } from 'vitest';
 import { matchingSlots, User } from './User';
-import { set } from 'date-fns';
 
 function utcDate(day: number, hour: number, minute: number): number {
 	return Date.UTC(2023, 3 - 1, day, hour, minute, 0, 0);

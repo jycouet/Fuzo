@@ -1,17 +1,17 @@
 <script lang="ts">
-	import { onMount, setContext } from 'svelte';
-	import 'cirrus-ui/dist/cirrus-all.min.css';
 	import DayLightMap from '$lib/DayLightMap.svelte';
-	import EditUser from './EditUser.svelte';
-	import ShowUser from './ShowUser.svelte';
-	import ShowMatch from './ShowMatch.svelte';
-	import { writable } from 'svelte/store';
-	import type { Writable } from 'svelte/store';
-	import { me } from '$lib/users';
 	import { User, matchingSlots } from '$lib/User';
 	import type { UTCSlot } from '$lib/User';
-	import { intlFormat } from 'date-fns';
 	import _timezones from '$lib/timezone.json';
+	import { me } from '$lib/users';
+	import 'cirrus-ui/dist/cirrus-all.min.css';
+	import { intlFormat } from 'date-fns';
+	import { onMount, setContext } from 'svelte';
+	import { writable } from 'svelte/store';
+	import type { Writable } from 'svelte/store';
+	import EditUser from './EditUser.svelte';
+	import ShowMatch from './ShowMatch.svelte';
+	import ShowUser from './ShowUser.svelte';
 
 	// Typings
 	const timezones = _timezones as Record<string, string>;

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Hashids from 'hashids';
 	import { page } from '$app/stores';
 	import { formatDistance, format, formatDuration, intervalToDuration } from 'date-fns';
+	import Hashids from 'hashids';
 	import { onMount } from 'svelte';
 
 	const hashids = new Hashids();
