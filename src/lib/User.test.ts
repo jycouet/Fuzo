@@ -28,6 +28,11 @@ describe('User JSON', () => {
 			}
 		]);
 	});
+	it('works with custom JSON', () => {
+		const input = '{"hello": "world", "foo": null}';
+		const output = JSON.parse(input, User.reviver);
+		expect(output).toMatchObject({ hello: 'world', foo: null });
+	});
 	it('from list JSON', () => {
 		const input =
 			'[{"_u":{"n":"John","t":"America/Toronto","sl":[{"s":1679189280000,"e":1679182880000}]}},{"_u":{"n":"Doe","t":"Europe/Paris","sl":[{"s":1679189280000,"e":1679182880000}]}}]';
