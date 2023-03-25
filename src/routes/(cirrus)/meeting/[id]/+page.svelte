@@ -4,6 +4,7 @@
 	import { eventSourceStore } from '$lib/EventSourceStore';
 	import { User, matchingSlots } from '$lib/User';
 	import type { UTCSlot } from '$lib/User';
+	import { notifications } from '$lib/store';
 	import _timezones from '$lib/timezone.json';
 	import { me } from '$lib/users';
 	import { intlFormat } from 'date-fns';
@@ -16,14 +17,23 @@
 	// Typings
 	const timezones = _timezones as Record<string, string>;
 
-	let height = 1024,
-		width = 800,
+	const currentDate = writable(new Date());
+	const manualDate = writable(false);
+
+	setContext('currentDate', currentDate);
+	setContext('manualDate', manualDate);
+
+	// Map
+	let height = 0,
+		width = 0,
 		selectedTz: Array<string> = [],
-		angle: 0,
-		matches: Array<UTCSlot> = [];
-	let currentDate = writable(new Date());
-	let manualDate = writable(false);
+		angle: 0;
+
+	// Users
+	let matches: Array<UTCSlot> = [];
 	let uuid: string | null = null;
+	let matchesBump = false,
+		othersBump = false;
 	const notifyUrl = `/meeting/${$page.params.id}/notify`;
 	const users = eventSourceStore<Array<User>>([], notifyUrl, (input) =>
 		JSON.parse(input, User.reviver)
@@ -32,12 +42,11 @@
 		uuid = event.data;
 		$me = $me;
 	});
-	const others: Readable<Array<User>> = derived([users], ([$users]) =>
-		$users.filter((user) => user.name !== $me.name)
-	);
-
-	setContext('currentDate', currentDate);
-	setContext('manualDate', manualDate);
+	const others: Readable<Array<User>> = derived([users], ([$users]) => {
+		bump(true);
+		notifications.push('User changed', 2);
+		return $users.filter((user) => user.name !== $me.name);
+	});
 
 	onMount(() => {
 		me.subscribe((user) =>
@@ -51,7 +60,28 @@
 		return () => clearInterval(interval);
 	});
 
-	$: matches = matchingSlots($me as User, ...$others);
+	$: {
+		const before = matches.length;
+		matches = matchingSlots($me as User, ...$others);
+		if (before !== matches.length) {
+			bump(false);
+			if (before < matches.length) {
+				notifications.push('New matching slot' + (matches.length - before === 1 ? '' : 's'), 3);
+			} else {
+				notifications.push('Matches changed', 2);
+			}
+		}
+	}
+
+	function bump(others: boolean): void {
+		if (others) {
+			othersBump = true;
+			setTimeout(() => (othersBump = false), 500);
+		} else {
+			matchesBump = true;
+			setTimeout(() => (matchesBump = false), 500);
+		}
+	}
 </script>
 
 <svelte:window bind:innerHeight={height} bind:innerWidth={width} />
@@ -62,15 +92,19 @@
 
 <main class="hero fullscreen">
 	<article class="hero-body">
-		<section class="content">
-			<header class="u-text-center m-4">
+		<section class="content u-text-center">
+			<header class="m-4">
 				<h1 class="headline-1 u-inline-block p-2 u-shadow-lg bg-white u-round-lg font-alt">
 					Fuzo &mdash; Meeting
 				</h1>
 			</header>
 			<a class="btn" href="#edit-user">Edit your Profile</a>
 			<div class="list-dropdown">
-				<button class="btn-dark btn-dropdown m-0" disabled={$others.length === 0}>
+				<button
+					class="btn-dark btn-dropdown m-0"
+					class:bump={othersBump}
+					disabled={$others.length === 0}
+				>
 					Users &nbsp;<span class="tag tag--white">{$others.length}</span>
 					<span class="caret" />
 				</button>
@@ -88,6 +122,7 @@
 			</div>
 			<a
 				class="btn"
+				class:bump={matchesBump}
 				class:btn--disabled={matches.length === 0}
 				class:btn-success={matches.length > 0}
 				href="{matches.length === 0 ? '!' : ''}#matching"
@@ -131,5 +166,21 @@
 
 	.currentDate {
 		z-index: 9999;
+	}
+
+	.bump {
+		animation: bump 500ms ease-out;
+	}
+
+	@keyframes bump {
+		0% {
+			transform: scale(1);
+		}
+		50% {
+			transform: scale(1.125);
+		}
+		100% {
+			transform: scale(1);
+		}
 	}
 </style>

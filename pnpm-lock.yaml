@@ -1,6 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@macfja/svelte-expirable': ^1.0.1
   '@macfja/svelte-persistent-store': ^2.2.1
   '@playwright/test': ^1.28.1
   '@sveltejs/adapter-auto': ^2.0.0
@@ -32,6 +33,7 @@ specifiers:
   vitest: ^0.25.3
 
 dependencies:
+  '@macfja/svelte-expirable': 1.0.1
   '@macfja/svelte-persistent-store': 2.2.1_svelte@3.55.1
   cirrus-ui: 0.7.1
   d3-geo: 3.1.0
@@ -902,6 +904,10 @@ packages:
 
   /@macfja/serializer/1.1.2:
     resolution: {integrity: sha512-kqEg3Zu5/g3ivdeb+jP4rBVVdmtKXVsRwH+x9KdM2Y7d2mKLq54g+YLSgTQ4KwJvWmyHFvRq0ouX5Dr4H1Hw3Q==}
+    dev: false
+
+  /@macfja/svelte-expirable/1.0.1:
+    resolution: {integrity: sha512-Yym6p0eQ6sBn1HffKvBCC/OqOlVe1ffpzH1mV788xm+dsQIPIcD2GoqiS7NjnYPv0Bytll3amJsQzjmaJPBC3Q==}
     dev: false
 
   /@macfja/svelte-persistent-store/2.2.1_svelte@3.55.1:
