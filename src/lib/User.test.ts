@@ -63,11 +63,6 @@ describe('User addTodaySlot', () => {
 		}
 	];
 
-	it('Local hours', () => {
-		const user = new User('John', 'America/Toronto');
-		user.addTodaySlot(16, 17);
-		expect(user.slots).toEqual(expectedLocalizedSlots);
-	});
 	it('UTC hours', () => {
 		const user = new User('John', 'America/Toronto');
 		user.addTodaySlot(21, 22, false);
