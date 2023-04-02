@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
-	import 'cirrus-ui/dist/cirrus-all.min.css';
 	import { format, intervalToDuration } from 'date-fns';
 	import Hashids from 'hashids';
 	import { onMount } from 'svelte';
@@ -29,7 +28,10 @@
 </script>
 
 <svelte:head>
-	<meta property="og:image" content="https://picsum.photos/id/19/400/400" />
+	<meta
+		property="og:image"
+		content="https://picsum.photos/id/{$page.url.searchParams.get('img') ?? 19}/400/400"
+	/>
 	<title
 		>{decodeURIComponent(atob($page.url.searchParams.get('title') ?? ''))} - {format(
 			timestamp,
@@ -40,21 +42,23 @@
 
 <main class="hero fullscreen u-relative">
 	<img
-		src="https://picsum.photos/id/19/400/400"
+		src="https://picsum.photos/id/{$page.url.searchParams.get('img') ?? 19}/400/400"
 		alt="event theme"
-		class="u-fixed u-z-n1 u-blur-sm"
+		class="u-fixed u-overlay h-100p u-z-n1 w-100p u-blur-sm img-cover"
 	/>
 	<article class="hero-body u-flex-column">
 		<header class="mx-auto u-text-center">
 			<h1 class="headline-1 hover-grow title">
 				{decodeURIComponent(atob($page.url.searchParams.get('title') ?? ''))}
 			</h1>
-			<span class="subtitle font-semibold tag">{format(timestamp, 'PPPPpppp')}</span>
+			<span class="subtitle font-semibold frame bg-white u-rounded-xs px-2 py-1 u-inline-block"
+				>{format(timestamp, 'PPPPpppp')}</span
+			>
 		</header>
 		{#if browser}
 			<div class="divider" />
 			<section class="frame u-round-lg bg-white u-shadow-lg">
-				<dl class="u-flex text-xl frame__body">
+				<dl class="grid text-xl frame__body">
 					{#if duration.years ?? 0 > 0}
 						<dt>
 							{#key duration.years}<span in:fly={{ y: 20 }} out:fly={{ y: -20 }}
@@ -104,16 +108,24 @@
 </main>
 
 <style>
-	main img {
-		width: 100%;
-		max-height: 100vh;
-		inset: 0;
-		object-fit: cover;
-	}
-
 	dl {
 		padding-inline: 1em;
 		margin: 0.5em;
+		grid-template-columns: repeat(12, 0fr);
+		grid-template-rows: 0fr;
+	}
+
+	@media (max-width: 1024px) {
+		dl {
+			grid-template-columns: repeat(4, 0fr);
+			grid-template-rows: unset;
+		}
+	}
+
+	@media (max-width: 450px) {
+		dl {
+			grid-template-columns: repeat(2, 0fr);
+		}
 	}
 
 	.title {
