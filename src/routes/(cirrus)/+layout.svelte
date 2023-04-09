@@ -15,6 +15,10 @@
 </aside>
 
 <style>
+	:global(html) {
+		background: var(--cirrus-bg);
+	}
+
 	aside {
 		position: fixed;
 		bottom: 1rem;
@@ -27,5 +31,39 @@
 		margin-left: 1ch;
 		font-size: 0.75em;
 		opacity: 0.75;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		:global(:root) {
+			--cirrus-fg: #eee;
+			--cirrus-bg: #222222;
+		}
+
+		:global(.card) {
+			background-color: #111;
+		}
+		:global(
+				input:not([type='checkbox']):not([type='radio']):not([type='submit']):not(
+						[type='button']
+					):not([type='reset']):not([type='range']),
+				select
+			) {
+			background-color: var(--cirrus-bg);
+			color: inherit;
+			border-color: #444;
+		}
+		:global(.tag) {
+			background-color: #444;
+		}
+		:global(.card .card__action-bar) {
+			border-top-color: #444;
+		}
+		:global(.divider) {
+			border-top-color: #444;
+		}
+		:global(.divider[data-content]::after) {
+			background-color: #222;
+			color: #444;
+		}
 	}
 </style>

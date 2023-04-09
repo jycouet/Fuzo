@@ -85,4 +85,10 @@
 		pointer-events: none;
 		border: none !important;
 	}
+
+	@media (prefers-color-scheme: dark) {
+		.sliders_control:before {
+			background: #555;
+		}
+	}
 </style>
