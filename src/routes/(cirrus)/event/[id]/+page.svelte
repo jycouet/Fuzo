@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
-	import { format, intervalToDuration } from 'date-fns';
+	import { format, intervalToDuration, isBefore } from 'date-fns';
 	import Hashids from 'hashids';
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
@@ -58,7 +58,7 @@
 		{#if browser}
 			<div class="divider" />
 			<section class="frame u-round-lg bg-white u-shadow-lg">
-				<dl class="grid text-xl frame__body">
+				<dl class="grid text-xl frame__body" class:past={isBefore(timestamp, now)}>
 					{#if duration.years ?? 0 > 0}
 						<dt>
 							{#key duration.years}<span in:fly={{ y: 20 }} out:fly={{ y: -20 }}
@@ -173,5 +173,18 @@
 
 	dl dt + dd span.dimmed {
 		opacity: 0.3;
+	}
+
+	.past {
+		position: relative;
+	}
+	.past:before {
+		position: absolute;
+		content: 'Past event';
+		top: 0;
+		left: 0;
+		color: gray;
+		font-size: 0.75em;
+		line-height: 1em;
 	}
 </style>
