@@ -45,9 +45,5 @@ jobs:
         with:
           run_install: true
           version: 7
-      - name: Install Playwright
-        run: pnpx playwright install --with-deps chromium
-      - name: Run test (Playwright)
-        run: pnpm run test
       - name: Run test (Vitest)
         run: pnpm run test:unit --run

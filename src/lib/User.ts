@@ -102,6 +102,8 @@ export class User {
 		}
 		if (
 			typeof value === 'object' &&
+			value !== null &&
+			value !== undefined &&
 			Object.keys(value as object).includes('_u') &&
 			((value as { _u: unknown })['_u'] as User) instanceof User
 		) {
