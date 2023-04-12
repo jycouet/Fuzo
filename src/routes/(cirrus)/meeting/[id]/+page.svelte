@@ -183,4 +183,10 @@
 			transform: scale(1);
 		}
 	}
+
+	@media (prefers-color-scheme: dark) {
+		.bg-white {
+			background-color: #222 !important;
+		}
+	}
 </style>

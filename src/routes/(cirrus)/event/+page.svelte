@@ -29,19 +29,19 @@
 			<div class="tile__container">
 				<header class="tile__title">Date</header>
 				<div class="u-flex">
-					<label class="p-1 m-1 bg-gray-200 u-flex u-items-center u-round-sm px-2">
+					<label class="p-1 m-1 bg-gray-500 u-bg-opacity-50 u-flex u-items-center u-round-sm px-2">
 						<strong class="lead mr-2">Year</strong>
 						<input bind:value={year} type="range" min="1970" max={new Date().getFullYear() + 10} />
 						<span class="tag ml-2">{year}</span>
 					</label>
 
-					<label class="p-1 m-1 bg-gray-200 u-flex u-items-center u-round-sm px-2">
+					<label class="p-1 m-1 bg-gray-500 u-bg-opacity-50 u-flex u-items-center u-round-sm px-2">
 						<strong class="lead mr-2">Month</strong>
 						<input bind:value={month} type="range" min="0" max={11} />
 						<span class="tag ml-2">{month + 1}</span>
 					</label>
 
-					<label class="p-1 m-1 bg-gray-200 u-flex u-items-center u-round-sm px-2">
+					<label class="p-1 m-1 bg-gray-500 u-bg-opacity-50 u-flex u-items-center u-round-sm px-2">
 						<strong class="lead mr-2">Day</strong>
 						<input bind:value={day} type="range" min="0" max={31} />
 						<span class="tag ml-2">{day}</span>
@@ -55,13 +55,13 @@
 				<header class="tile__title">Time</header>
 
 				<div class="u-flex">
-					<label class="p-1 m-1 bg-gray-200 u-flex u-items-center u-round-sm px-2">
+					<label class="p-1 m-1 bg-gray-500 u-bg-opacity-50 u-flex u-items-center u-round-sm px-2">
 						<strong class="lead mr-2">Hours</strong>
 						<input bind:value={hours} type="range" min="0" max={23} />
 						<span class="tag ml-2">{hours}</span>
 					</label>
 
-					<label class="p-1 m-1 bg-gray-200 u-flex u-items-center u-round-sm px-2">
+					<label class="p-1 m-1 bg-gray-500 u-bg-opacity-50 u-flex u-items-center u-round-sm px-2">
 						<strong class="lead mr-2">Minutes</strong>
 						<input bind:value={minutes} type="range" min="0" max={59} />
 						<span class="tag ml-2">{minutes}</span>
@@ -71,12 +71,12 @@
 		</section>
 		<section class="card__footer u-text-center">{format(date, 'PPPPpppp')}</section>
 		<section class="tile">
-			<div class="tile__content w-100p">
-				<label for="title" class="tile__title">Title</label>
-				<input id="title" class="w-100p" bind:value={title} />
+			<div class="tile__content w-auto 100p">
+				<label for="title" class="tile__title u-block">Title</label>
+				<input id="title" class="mx-1" bind:value={title} />
 			</div>
 		</section>
-		<section class="tile">
+		<section class="tile mt-2">
 			<div class="tile__content">
 				<header class="tile__title">Image</header>
 				<div class="u-overflow-y-scroll h-32">

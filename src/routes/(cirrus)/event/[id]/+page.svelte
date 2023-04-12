@@ -187,4 +187,14 @@
 		font-size: 0.75em;
 		line-height: 1em;
 	}
+	@media (prefers-color-scheme: dark) {
+		.bg-white {
+			background-color: #121212 !important;
+		}
+		.title {
+			color: black;
+			text-shadow: 0 1px 0 #404040, 0 2px 0 #323232, 0 3px 0 #2c2c2c, 0 4px 0 #262626,
+				0 5px 0 #202020, 0 5px 6px rgba(255, 255, 255, 0.5);
+		}
+	}
 </style>
